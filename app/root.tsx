@@ -1,7 +1,6 @@
 import { json } from "@remix-run/node";
 import {
   Form,
-  Link,
   Links,
   Outlet,
   LiveReload,
@@ -19,7 +18,6 @@ import { createEmptyContact, getContacts } from "./data";
 
 export const action = async () => {
   const contact = await createEmptyContact();
-  const navigation = useNavigation();
   return json({ contact });
 };
 
@@ -30,6 +28,7 @@ export const loader = async () => {
 
 export default function App() {
   const { contacts } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
   return (
     <html lang="en">
       <head>
