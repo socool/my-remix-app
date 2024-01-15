@@ -10,6 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useNavigation,
 } from "@remix-run/react";
 
 import { LinksFunction } from "@remix-run/node";
@@ -18,6 +19,7 @@ import { createEmptyContact, getContacts } from "./data";
 
 export const action = async () => {
   const contact = await createEmptyContact();
+  const navigation = useNavigation();
   return json({ contact });
 };
 
@@ -85,7 +87,10 @@ export default function App() {
           </nav>
         </div>
 
-        <div id="detail">
+        <div
+          id="detail"
+          className={navigation.state === "loading" ? "loading" : ""}
+        >
           <Outlet />
         </div>
         <ScrollRestoration />
