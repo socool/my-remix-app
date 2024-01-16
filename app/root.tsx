@@ -43,6 +43,9 @@ export default function App() {
   const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const submit = useSubmit();
+  const searching =
+    navigation.location &&
+    new URLSearchParams(navigation.location.search).has("q");
   const [query, setQuery] = useState(q || "");
   useEffect(() => {
     setQuery(q || "");
@@ -72,8 +75,9 @@ export default function App() {
                 onchange={(event) => {
                   submit(event.currentTarget);
                 }}
+                className={searching ? "loading" : ""}
               />
-              <div id="search-spinner" aria-hidden hidden={true} />
+              <div id="search-spinner" aria-hidden hidden={!searching} />
             </Form>
             <Form method="post">
               <button type="submit">New</button>
@@ -112,7 +116,9 @@ export default function App() {
 
         <div
           id="detail"
-          className={navigation.state === "loading" ? "loading" : ""}
+          className={
+            navigation.state === "loading" && !searching ? "loading" : ""
+          }
         >
           <Outlet />
         </div>
