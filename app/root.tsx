@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Form,
   Links,
@@ -11,6 +11,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useNavigation,
+  useSubmit,
 } from "@remix-run/react";
 
 import { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
@@ -31,14 +32,20 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ contacts, q });
 };
 
+export const links: LinksFunction = () => [
+  {
+    rel: "stylesheet",
+    href: appStyleHref,
+  },
+];
+
 export default function App() {
   const { contacts, q } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
+  const submit = useSubmit();
+  const [query, setQuery] = useState(q || "");
   useEffect(() => {
-    const searchField = document.getElementById("q");
-    if (searchField instanceof HTMLInputElement) {
-      searchField.value = q || "";
-    }
+    setQuery(q || "");
   }, [q]);
   return (
     <html lang="en">
@@ -60,6 +67,11 @@ export default function App() {
                 placeholder="Search"
                 type="search"
                 name="q"
+                onChange={(event) => setQuery(event.currentTarget.value)}
+                value={query}
+                onchange={(event) => {
+                  submit(event.currentTarget);
+                }}
               />
               <div id="search-spinner" aria-hidden hidden={true} />
             </Form>
@@ -111,9 +123,3 @@ export default function App() {
     </html>
   );
 }
-export const links: LinksFunction = () => [
-  {
-    rel: "stylesheet",
-    href: appStyleHref,
-  },
-];
