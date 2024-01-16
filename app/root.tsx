@@ -73,8 +73,12 @@ export default function App() {
                 onChange={(event) => setQuery(event.currentTarget.value)}
                 value={query}
                 onchange={(event) => {
-                  submit(event.currentTarget);
+                  const isFirstSearch = q === null;
+                  submit(event.currentTarget, {
+                    replace: !isFirstSearch,
+                  });
                 }}
+                role="search"
                 className={searching ? "loading" : ""}
               />
               <div id="search-spinner" aria-hidden hidden={!searching} />
