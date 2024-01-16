@@ -72,7 +72,7 @@ export default function App() {
                 name="q"
                 onChange={(event) => setQuery(event.currentTarget.value)}
                 value={query}
-                onchange={(event) => {
+                onChange={(event) => {
                   const isFirstSearch = q === null;
                   submit(event.currentTarget, {
                     replace: !isFirstSearch,

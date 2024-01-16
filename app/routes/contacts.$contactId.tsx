@@ -1,9 +1,9 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { LoaderFunctionArgs, json, ActionFunctionArgs } from "@remix-run/node";
+import { Form, useLoaderData, useFetcher } from "@remix-run/react";
 import type { FunctionComponent } from "react";
 
 import type { ContactRecord } from "../data";
-import { getContact } from "../data";
+import { getContact, updateContact } from "../data";
 
 import invariant from "tiny-invariant";
 
@@ -14,6 +14,15 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     throw new Response("Not Found", { status: 404 });
   }
   return json({ contact });
+};
+
+export const action = async ({ params, request }: ActionFunctionArgs) => {
+  console.log(">>>>>> action");
+  invariant(params.contactId, "contactId not found");
+  const formData = await request.formData();
+  return updateContact(params.contactId, {
+    favorite: formData.get("favorite") === "true",
+  });
 };
 
 export default function Contact() {
@@ -79,17 +88,20 @@ export default function Contact() {
 const Favorite: FunctionComponent<{
   contact: Pick<ContactRecord, "favorite">;
 }> = ({ contact }) => {
+  const fetcher = useFetcher();
   const favorite = contact.favorite;
 
   return (
-    <Form method="post">
-      <button
-        aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
-        name="favorite"
-        value={favorite ? "false" : "true"}
-      >
-        {favorite ? "★" : "☆"}
-      </button>
-    </Form>
+    <fetcher.Form method="post">
+      <Form method="post">
+        <button
+          aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+          name="favorite"
+          value={favorite ? "false" : "true"}
+        >
+          {favorite ? "★" : "☆"}
+        </button>
+      </Form>
+    </fetcher.Form>
   );
 };
